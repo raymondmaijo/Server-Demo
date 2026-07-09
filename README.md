@@ -30,7 +30,7 @@ Bash
 curl http://localhost:3000/does-not-exist
 Expected Output: {"error": "Not Found"}
 
-4. How to Call it From Your Browser
+How to Call it From Your Browser
 Because these are simple GET endpoints, you can view them directly in any web browser just like the others:
 
 Open your browser.
