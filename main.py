@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import HTTPException
 import uvicorn
 
 app = FastAPI()
@@ -24,6 +25,20 @@ def health():
 @app.get("/tasks")
 def showall():
     return tasks
+
+@app.get("/tasks/{id}")
+def id_show(id: int):
+    f=0
+    for i in tasks:
+        if i["id"]==id:
+            return i
+            f=1
+    if f==0:
+        raise HTTPException(status_code=404, detail={"error": "Task 99 not found"})
+
+
+    
+    
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000)
