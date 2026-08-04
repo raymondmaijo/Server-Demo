@@ -79,7 +79,35 @@ def addpost(task: TaskCreate):
     }
     tasks.append(newtask) #[cite: 1]
     return newtask #[cite: 1]
+@app.put("/tasks/{id}", summary="Update Task")
+def update_task(id: int, task_update: TaskUpdate):
+    """Updates an existing task's title and/or completion status."""
+    # Validate that at least one field was provided
+    if task_update.title is None and task_update.done is None:
+        raise HTTPException(status_code=400, detail="Empty or invalid body")
 
+    for task in tasks:
+        if task["id"] == id:
+            if task_update.title is not None:
+                if not task_update.title.strip():
+                    raise HTTPException(status_code=400, detail="Title cannot be empty")
+                task["title"] = task_update.title.strip()
+            if task_update.done is not None:
+                task["done"] = task_update.done
+            return task
+            
+    raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
+
+@app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete Task")
+def delete_task(id: int):
+    """Removes a task from the list completely."""
+    for i, task in enumerate(tasks):
+        if task["id"] == id:
+            del tasks[i]
+            # 204 No Content needs an empty Response body
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+            
+    raise HTTPException(status_code=404, detail={"error": f"Task {id} not found"})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True) #[cite: 1]
