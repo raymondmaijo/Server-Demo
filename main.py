@@ -160,6 +160,7 @@ def update_task(id: int, task_update: TaskUpdate):
     return updated_task
 
 # --- STAGE 3: DELETE WITH SQL ---
+#done
 
 @app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete Task")
 def delete_task(id: int):
@@ -170,7 +171,7 @@ def delete_task(id: int):
     # Deleting the row using SQL
     cursor.execute("DELETE FROM tasks WHERE id = ?", (id,))
     conn.commit()
-    
+
     if cursor.rowcount == 0:
         conn.close()
         raise HTTPException(status_code=404, detail={"error": "Task not found"})
