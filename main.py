@@ -88,8 +88,6 @@ def read_root():
 def health():
     return {"status": "ok"}
 
-# --- STAGE 1: READ FROM DATABASE ---
-
 @app.get("/tasks", summary="List Tasks")
 def showall():
     """Returns the entire list of tasks from the database."""
@@ -109,10 +107,9 @@ def id_show(id: int):
         raise HTTPException(status_code=404, detail={"error": "Task not found"})
     return task
 
-# --- REMAINING CRUD (Updated for Database) ---
-
 @app.post("/tasks", status_code=status.HTTP_201_CREATED, summary="Create Task")
 def addpost(task: TaskCreate):
+    """Creates a new task and saves it to the SQLite database."""
     if not task.title or not task.title.strip():
         raise HTTPException(status_code=400, detail="Title is missing or empty")
     
@@ -132,6 +129,7 @@ def addpost(task: TaskCreate):
 
 @app.put("/tasks/{id}", summary="Update Task")
 def update_task(id: int, task_update: TaskUpdate):
+    """Updates an existing task in the database."""
     if task_update.title is None and task_update.done is None:
         raise HTTPException(status_code=400, detail="Empty or invalid body")
 
@@ -160,6 +158,7 @@ def update_task(id: int, task_update: TaskUpdate):
 
 @app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete Task")
 def delete_task(id: int):
+    """Deletes a task from the database."""
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM tasks WHERE id = ?", (id,))
