@@ -127,6 +127,8 @@ def addpost(task: TaskCreate):
     
     return new_task
 
+# --- STAGE 3: UPDATE WITH SQL ---
+
 @app.put("/tasks/{id}", summary="Update Task")
 def update_task(id: int, task_update: TaskUpdate):
     """Updates an existing task in the database."""
@@ -146,6 +148,7 @@ def update_task(id: int, task_update: TaskUpdate):
         
     new_done = task_update.done if task_update.done is not None else existing["done"]
     
+    # Updating the row using SQL
     conn.execute(
         "UPDATE tasks SET title = ?, done = ? WHERE id = ?", 
         (new_title, new_done, id)
@@ -156,11 +159,15 @@ def update_task(id: int, task_update: TaskUpdate):
     
     return updated_task
 
+# --- STAGE 3: DELETE WITH SQL ---
+
 @app.delete("/tasks/{id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete Task")
 def delete_task(id: int):
     """Deletes a task from the database."""
     conn = get_db()
     cursor = conn.cursor()
+    
+    # Deleting the row using SQL
     cursor.execute("DELETE FROM tasks WHERE id = ?", (id,))
     conn.commit()
     
